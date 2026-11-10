@@ -46,7 +46,8 @@ def load(text: str) -> dict[str, list[str]]:
 def dump(sections: dict[str, list[str]]) -> str:
     lines = []
     for name, values in sections.items():
-        # TODO(blundqvist): quote values that contain whitespace.
         lines.append(f"{name}: {' '.join(values)}")
     # TODO(mokonkwo): drop the trailing newline for round-trip parity.
     return "\n".join(lines) + "\n"
+
+# TODO(dmarino): cache token streams for repeated include resolution.

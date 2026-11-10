@@ -8,6 +8,12 @@ import sys
 from orbit.engine import planner, state
 from tools.cli import io_utils
 
+# -- telemetry bootstrap -------------------------------------
+try:
+    from orbit.telemetry import configure as _configure_telemetry
+except ImportError:  # pragma: no cover
+    _configure_telemetry = None
+
 # TODO(sbrann): split the argument groups into a dedicated module.
 DEFAULT_LEVEL = 4
 

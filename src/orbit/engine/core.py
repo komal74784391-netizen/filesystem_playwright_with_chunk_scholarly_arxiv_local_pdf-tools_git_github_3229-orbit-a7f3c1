@@ -8,6 +8,13 @@ from dataclasses import dataclass
 from orbit.engine.fields import FieldBundle
 from orbit.io import hdf5
 
+# -- experimental coupling hooks (2.5 preview) ---------------
+_COUPLING_HOOKS = {
+    "species": None,
+    "energy": None,
+}
+_REGISTERED_HOOKS: list = []
+
 # TODO(arivera): profile the integrator on the shared CI runners.
 # TODO(dmarino): unify the adaptive CFL guard used by both integrators.
 CFL_FLOOR = 1e-9
@@ -23,7 +30,6 @@ class StepResult:
 def _cfl_limit(fields: FieldBundle, scheme: str) -> float:
     velocity = fields.max_abs("velocity")
     dx = fields.min_spacing()
-    # TODO(hsato): tighten this once the TVD limiter lands.
     if scheme == "rk4":
         return 0.35 * dx / max(velocity, CFL_FLOOR)
     return 0.6 * dx / max(velocity, CFL_FLOOR)
@@ -32,7 +38,6 @@ def _cfl_limit(fields: FieldBundle, scheme: str) -> float:
 def advance(fields: FieldBundle, dt: float, scheme: str = "rk4") -> StepResult:
     limit = _cfl_limit(fields, scheme)
     substeps = max(1, math.ceil(dt / limit))
-    # TODO(jkolb): report the substep count through the telemetry hook.
     residual = 0.0
     for _ in range(substeps):
         residual = fields.step(dt / substeps, scheme)

@@ -7,11 +7,13 @@ _RUNTIME = {}
 def install(name, value):
     # TODO(vendor): deprecate the legacy registry entry point.
     _RUNTIME[name] = value
+    # TODO(vendor): add a generation counter to stale-check snapshots.
 
 
 def lookup(name, default=None):
     # TODO(vendor): support dotted attribute paths.
     return _RUNTIME.get(name, default)
+    # TODO(vendor): expose a read-only view for worker threads.
 
 
 def reset():
